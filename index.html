@@ -51,7 +51,6 @@
   <nav class="sticky top-0 z-50 glass border-b border-slate-200 dark:border-slate-800 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-        <!-- Logo & Title -->
         <div class="flex items-center space-x-3">
           <img src="logo.png" alt="Logo SD IT AL-IQRA" class="h-10 w-10 object-contain rounded-full bg-white p-1 border border-brand-500" onerror="this.src='https://via.placeholder.com/40?text=SD+IT'"/>
           <div>
@@ -60,20 +59,17 @@
           </div>
         </div>
 
-        <!-- Desktop Menu -->
         <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
           <a href="#profil" class="hover:text-brand-600 transition">Profil</a>
           <a href="#kalkulator" class="hover:text-brand-600 transition">Rincian Biaya</a>
           <a href="#ekstra" class="hover:text-brand-600 transition">Ekstrakurikuler</a>
           <a href="#galeri" class="hover:text-brand-600 transition">Galeri</a>
           <a href="#daftar" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition shadow-md">Daftar Sekarang</a>
-          <!-- Dark Mode Toggle -->
           <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 focus:outline-none">
             <i id="theme-icon" class="fas fa-moon"></i>
           </button>
         </div>
 
-        <!-- Mobile Controls -->
         <div class="flex items-center space-x-2 md:hidden">
           <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 focus:outline-none">
             <i id="theme-icon-mobile" class="fas fa-moon"></i>
@@ -85,7 +81,6 @@
       </div>
     </div>
 
-    <!-- Mobile Menu Dropdown -->
     <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
       <a href="#profil" onclick="toggleMobileMenu()" class="block py-2 hover:text-brand-600">Profil & Program</a>
       <a href="#kalkulator" onclick="toggleMobileMenu()" class="block py-2 hover:text-brand-600">Rincian Biaya</a>
@@ -136,15 +131,15 @@
     <section id="kalkulator" class="scroll-mt-20">
       <div class="text-center mb-8">
         <h2 class="text-2xl font-bold text-brand-700 dark:text-brand-500">Simulasi & Rincian Biaya</h2>
-        <p class="text-sm text-slate-500">Kalkulasi otomatis berdasarkan jenis kelamin calon siswa</p>
+        <p class="text-sm text-slate-500">Kalkulasi otomatis berdasarkan jenis kelamin & metode pembayaran</p>
         <div class="w-16 h-1 bg-brand-500 mx-auto mt-2 rounded"></div>
       </div>
 
       <div class="max-w-3xl mx-auto bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
         
         <!-- Filter Gender Simulasi -->
-        <div class="mb-6 p-4 bg-brand-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between flex-wrap gap-4">
-          <span class="font-medium text-sm">Simulasi Jenis Kelamin Siswa:</span>
+        <div class="mb-4 p-4 bg-brand-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between flex-wrap gap-4">
+          <span class="font-medium text-sm">Jenis Kelamin Siswa:</span>
           <div class="flex gap-4">
             <label class="inline-flex items-center cursor-pointer">
               <input type="radio" name="simulasi_jk" value="Laki-laki" checked onchange="updateBiayaDisplay()" class="text-brand-600 focus:ring-brand-500">
@@ -153,6 +148,25 @@
             <label class="inline-flex items-center cursor-pointer">
               <input type="radio" name="simulasi_jk" value="Perempuan" onchange="updateBiayaDisplay()" class="text-brand-600 focus:ring-brand-500">
               <span class="ml-2 text-sm font-medium">Perempuan (Akhwat)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Filter Skema Pembayaran -->
+        <div class="mb-6 p-4 bg-amber-50 dark:bg-slate-700/50 rounded-xl flex items-center justify-between flex-wrap gap-4 border border-amber-200 dark:border-slate-600">
+          <span class="font-medium text-sm text-amber-900 dark:text-amber-300"><i class="fas fa-tags mr-1"></i> Skema Pembayaran & Diskon:</span>
+          <div class="flex flex-wrap gap-3">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="simulasi_skema" value="Standard" checked onchange="updateBiayaDisplay()" class="text-brand-600 focus:ring-brand-500">
+              <span class="ml-2 text-sm font-medium">Reguler</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="simulasi_skema" value="DP_2.5M" onchange="updateBiayaDisplay()" class="text-brand-600 focus:ring-brand-500">
+              <span class="ml-2 text-sm font-medium">DP ≥ Rp 2,5 Juta</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="simulasi_skema" value="Lunas" onchange="updateBiayaDisplay()" class="text-brand-600 focus:ring-brand-500">
+              <span class="ml-2 text-sm font-medium">Bayar Lunas</span>
             </label>
           </div>
         </div>
@@ -196,8 +210,14 @@
             <span id="cost-spp" class="font-semibold">Rp 0</span>
           </div>
 
+          <!-- Baris Diskon / Cashback -->
+          <div id="row-diskon" class="hidden flex justify-between border-b dark:border-slate-700 pb-2 text-emerald-600 dark:text-emerald-400 font-medium">
+            <span id="label-diskon">Potongan / Cashback</span>
+            <span id="cost-diskon">- Rp 0</span>
+          </div>
+
           <div class="flex justify-between pt-4 text-base sm:text-lg font-bold text-brand-700 dark:text-brand-400 border-t-2 border-brand-500">
-            <span>Total Estimasi Biaya</span>
+            <span>Total Biaya Akhir</span>
             <span id="cost-total">Rp 0</span>
           </div>
         </div>
@@ -277,13 +297,23 @@
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium mb-1">Pilihan Program *</label>
-          <select id="program" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
-            <option value="Reguler Fullday">Reguler Fullday</option>
-            <option value="Tahfizh Class">Tahfizh Class</option>
-            <option value="Bilingual Class">Bilingual Class</option>
-          </select>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Pilihan Program *</label>
+            <select id="program" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+              <option value="Reguler Fullday">Reguler Fullday</option>
+              <option value="Tahfizh Class">Tahfizh Class</option>
+              <option value="Bilingual Class">Bilingual Class</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Rencana Skema Pembayaran *</label>
+            <select id="skemaPembayaran" required onchange="syncSkemaToCalculator(this.value)" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+              <option value="Standard">Pembayaran Reguler</option>
+              <option value="DP_2.5M">DP ≥ Rp 2.500.000 (Gratis Pendaftaran)</option>
+              <option value="Lunas">Bayar Lunas (Cashback Rp 300.000)</option>
+            </select>
+          </div>
         </div>
 
         <button type="submit" id="btn-submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
@@ -303,7 +333,6 @@
   <script>
     let globalConfig = {};
 
-    // 1. Dark Mode Control
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     } else {
@@ -324,10 +353,8 @@
       document.getElementById('mobile-menu').classList.toggle('hidden');
     }
 
-    // 2. Helper Format Rupiah
     const formatRupiah = (num) => "Rp " + new Number(num || 0).toLocaleString('id-ID');
 
-    // 3. Sync Jenis Kelamin Form ke Kalkulator
     function syncGenderToCalculator(val) {
       const radio = document.querySelector(`input[name="simulasi_jk"][value="${val}"]`);
       if(radio) {
@@ -336,12 +363,20 @@
       }
     }
 
-    // 4. Kalkulasi & Render Biaya
+    function syncSkemaToCalculator(val) {
+      const radio = document.querySelector(`input[name="simulasi_skema"][value="${val}"]`);
+      if(radio) {
+        radio.checked = true;
+        updateBiayaDisplay();
+      }
+    }
+
     function updateBiayaDisplay() {
       const cfg = globalConfig;
       const selectedJK = document.querySelector('input[name="simulasi_jk"]:checked').value;
+      const selectedSkema = document.querySelector('input[name="simulasi_skema"]:checked').value;
 
-      const pendaftaran = parseInt(cfg.biaya_pendaftaran || 0);
+      let pendaftaran = parseInt(cfg.biaya_pendaftaran || 0);
       const infaq = parseInt(cfg.biaya_infaq_sarana || 0);
       const buku = parseInt(cfg.biaya_buku_1tahun || 0);
       const seragam = parseInt(cfg.biaya_seragam || 0);
@@ -359,6 +394,26 @@
         document.getElementById('label-headwear').innerText = "5. Kerudung (Akhwat)";
       }
 
+      // Hitung Diskon & Potongan
+      let diskon = 0;
+      const rowDiskon = document.getElementById('row-diskon');
+      const labelDiskon = document.getElementById('label-diskon');
+      const costDiskon = document.getElementById('cost-diskon');
+
+      if (selectedSkema === 'DP_2.5M') {
+        diskon = pendaftaran; // Gratis Pendaftaran
+        rowDiskon.classList.remove('hidden');
+        labelDiskon.innerText = "Diskon DP ≥ Rp 2,5 Juta (Gratis Pendaftaran)";
+        costDiskon.innerText = "- " + formatRupiah(diskon);
+      } else if (selectedSkema === 'Lunas') {
+        diskon = parseInt(cfg.cashback_lunas || 300000); // Cashback Lunas
+        rowDiskon.classList.remove('hidden');
+        labelDiskon.innerText = "Cashback Pembayaran Lunas";
+        costDiskon.innerText = "- " + formatRupiah(diskon);
+      } else {
+        rowDiskon.classList.add('hidden');
+      }
+
       document.getElementById('cost-pendaftaran').innerText = formatRupiah(pendaftaran);
       document.getElementById('cost-infaq').innerText = formatRupiah(infaq);
       document.getElementById('cost-buku').innerText = formatRupiah(buku);
@@ -369,14 +424,15 @@
       document.getElementById('cost-rapor').innerText = formatRupiah(rapor);
       document.getElementById('cost-spp').innerText = formatRupiah(spp);
 
-      const total = pendaftaran + infaq + buku + seragam + headwearCost + mutu + atribut + rapor + spp;
-      document.getElementById('cost-total').innerText = formatRupiah(total);
+      const totalAwal = pendaftaran + infaq + buku + seragam + headwearCost + mutu + atribut + rapor + spp;
+      const totalAkhir = totalAwal - diskon;
+
+      document.getElementById('cost-total').innerText = formatRupiah(totalAkhir);
     }
 
-    // 5. Fetch Data dari Apps Script
     async function initData() {
       if (GAS_WEB_APP_URL.includes("YOUR_SCRIPT_ID_HERE")) {
-        console.warn("Melihat tampilan dari Mock Data. Masukkan GAS_WEB_APP_URL untuk data live.");
+        console.warn("Melihat tampilan dari Mock Data.");
         renderData(getMockData());
         return;
       }
@@ -397,7 +453,6 @@
       globalConfig = data.config || {};
       const cfg = globalConfig;
 
-      // Render Teks & Profil
       if(cfg.nama_sekolah) document.getElementById('nav-title').innerText = cfg.nama_sekolah;
       if(cfg.tahun_ajaran) {
         document.getElementById('nav-ta').innerText = "SPMB TA " + cfg.tahun_ajaran;
@@ -405,7 +460,6 @@
       }
       if(cfg.profil_singkat) document.getElementById('profil-singkat').innerText = cfg.profil_singkat;
 
-      // Render Program Unggulan
       if(cfg.program_unggulan) {
         const programs = cfg.program_unggulan.split(',');
         document.getElementById('program-list').innerHTML = programs.map(p => 
@@ -413,10 +467,8 @@
         ).join('');
       }
 
-      // Render Biaya
       updateBiayaDisplay();
 
-      // Render Ekstrakurikuler
       const ekstraGrid = document.getElementById('ekstra-grid');
       if (data.ekstrakurikuler && data.ekstrakurikuler.length > 0) {
         ekstraGrid.innerHTML = data.ekstrakurikuler.map(item => `
@@ -431,7 +483,6 @@
         `).join('');
       }
 
-      // Render Galeri
       const galeriGrid = document.getElementById('galeri-grid');
       if (data.galeri && data.galeri.length > 0) {
         galeriGrid.innerHTML = data.galeri.map(img => `
@@ -446,7 +497,6 @@
       }
     }
 
-    // 6. Form Submit Function
     async function submitForm(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-submit');
@@ -461,7 +511,9 @@
         jk: document.getElementById('jk').value,
         namaOrtu: document.getElementById('namaOrtu').value,
         noWa: document.getElementById('noWa').value,
-        program: document.getElementById('program').value
+        program: document.getElementById('program').value,
+        skemaPembayaran: document.getElementById('skemaPembayaran').value,
+        totalBayar: document.getElementById('cost-total').innerText
       };
 
       try {
@@ -495,7 +547,6 @@
       }
     }
 
-    // Fallback Mock Data
     function getMockData() {
       return {
         config: {
@@ -512,7 +563,9 @@
           biaya_mutu_pendidikan: 1000000,
           biaya_atribut: 200000,
           biaya_rapor: 100000,
-          spp_bulanan: 650000
+          spp_bulanan: 650000,
+          diskon_dp_nomor: 2500000,
+          cashback_lunas: 300000
         },
         ekstrakurikuler: [
           { nama: "Pramuka SIT", kategori: "Wajib", deskripsi: "Melatih kemandirian dan kepemimpinan Islam", icon: "fa-campground" },
