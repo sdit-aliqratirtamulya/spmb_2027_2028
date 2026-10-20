@@ -15,6 +15,8 @@
             brand: {
               50: '#f0fdf4',
               100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
               500: '#22c55e',
               600: '#16a34a',
               700: '#15803d',
@@ -42,7 +44,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
 
-  <!-- MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI -->
+  <!-- ================================================================= -->
+  <!-- MASUKKAN URL GOOGLE APPS SCRIPT (WEB APP) ANDA DI BAWAH INI       -->
+  <!-- ================================================================= -->
   <script>
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_0dOe9-vIaZ5dkY7zou76OEEq6SkSh_y_m7tlj9hptw--kw4waeWsfRu6J4Q_bT5mew/exec";
   </script>
@@ -51,6 +55,7 @@
   <nav class="sticky top-0 z-50 glass border-b border-slate-200 dark:border-slate-800 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
+        <!-- Logo & Title -->
         <div class="flex items-center space-x-3">
           <img src="logo.png" alt="Logo SD IT AL-IQRA" class="h-10 w-10 object-contain rounded-full bg-white p-1 border border-brand-500" onerror="this.src='https://via.placeholder.com/40?text=SD+IT'"/>
           <div>
@@ -59,17 +64,20 @@
           </div>
         </div>
 
+        <!-- Desktop Menu -->
         <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
           <a href="#profil" class="hover:text-brand-600 transition">Profil</a>
           <a href="#kalkulator" class="hover:text-brand-600 transition">Rincian Biaya</a>
           <a href="#ekstra" class="hover:text-brand-600 transition">Ekstrakurikuler</a>
           <a href="#galeri" class="hover:text-brand-600 transition">Galeri</a>
           <a href="#daftar" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition shadow-md">Daftar Sekarang</a>
+          <!-- Dark Mode Toggle -->
           <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 focus:outline-none">
             <i id="theme-icon" class="fas fa-moon"></i>
           </button>
         </div>
 
+        <!-- Mobile Controls -->
         <div class="flex items-center space-x-2 md:hidden">
           <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 focus:outline-none">
             <i id="theme-icon-mobile" class="fas fa-moon"></i>
@@ -81,6 +89,7 @@
       </div>
     </div>
 
+    <!-- Mobile Menu Dropdown -->
     <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
       <a href="#profil" onclick="toggleMobileMenu()" class="block py-2 hover:text-brand-600">Profil & Program</a>
       <a href="#kalkulator" onclick="toggleMobileMenu()" class="block py-2 hover:text-brand-600">Rincian Biaya</a>
@@ -96,6 +105,20 @@
       <img src="logo.png" alt="Logo SD IT AL-IQRA" class="h-24 w-24 mx-auto mb-2 bg-white rounded-full p-2 shadow-lg" onerror="this.src='https://via.placeholder.com/96?text=SD+IT'"/>
       <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Sistem Penerimaan Murid Baru</h1>
       <p id="hero-sub" class="text-lg sm:text-xl text-brand-100">SD IT AL-IQRA — Tahun Ajaran 2027/2028</p>
+      
+      <!-- STATS WIDGET / JUMLAH PENDAFTAR REALTIME -->
+      <div class="pt-4 flex justify-center">
+        <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md px-6 py-2.5 rounded-2xl border border-white/20 text-white shadow-xl">
+          <div class="w-10 h-10 rounded-full bg-brand-500/30 flex items-center justify-center text-brand-200 border border-brand-400/30">
+            <i class="fas fa-users text-lg"></i>
+          </div>
+          <div class="text-left">
+            <span class="text-[11px] text-brand-200 block uppercase font-semibold tracking-wider">Calon Siswa Terdaftar</span>
+            <span id="counter-pendaftar" class="text-xl font-extrabold leading-none text-white">0 Siswa</span>
+          </div>
+        </div>
+      </div>
+
       <div class="pt-4 flex justify-center gap-4">
         <a href="#daftar" class="bg-white text-brand-800 hover:bg-brand-50 font-bold px-6 py-3 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
           <i class="fas fa-file-signature mr-2"></i>Formulir Pendaftaran
@@ -469,6 +492,10 @@
       globalConfig = data.config || {};
       const cfg = globalConfig;
 
+      // Render Counter Jumlah Pendaftar Realtime
+      const totalPendaftar = data.totalPendaftar || 0;
+      document.getElementById('counter-pendaftar').innerText = totalPendaftar + " Siswa";
+
       if(cfg.nama_sekolah) document.getElementById('nav-title').innerText = cfg.nama_sekolah;
       if(cfg.tahun_ajaran) {
         document.getElementById('nav-ta').innerText = "SPMB TA " + cfg.tahun_ajaran;
@@ -550,7 +577,7 @@
             confirmButtonColor: '#16a34a'
           });
           document.getElementById('form-spmb').reset();
-          updateBiayaDisplay();
+          initData(); // Refresh counter pendaftar otomatis
         } else {
           throw new Error(result.message);
         }
@@ -587,6 +614,7 @@
           diskon_dp_nomor: 2500000,
           cashback_lunas: 300000
         },
+        totalPendaftar: 0,
         ekstrakurikuler: [
           { nama: "Pramuka SIT", kategori: "Wajib", deskripsi: "Melatih kemandirian dan kepemimpinan Islam", icon: "fa-campground" },
           { nama: "Tahfizh Club", kategori: "Keagamaan", deskripsi: "Bimbingan intensif hafalan Al-Qur'an", icon: "fa-quran" },
