@@ -64,7 +64,7 @@
           <a href="#kalkulator" class="hover:text-brand-600 transition">Rincian Biaya</a>
           <a href="#ekstra" class="hover:text-brand-600 transition">Ekstrakurikuler</a>
           <a href="#galeri" class="hover:text-brand-600 transition">Galeri</a>
-          <a href="#daftar" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition shadow-md">Yuk Daftar Sekarang!</a>
+          <a href="#daftar" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition shadow-md">Daftar Sekarang</a>
           <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 focus:outline-none">
             <i id="theme-icon" class="fas fa-moon"></i>
           </button>
@@ -297,7 +297,7 @@
           </div>
         </div>
 
-        <div class="grid sm:grid-cols-2 gap-4">
+        <div class="grid sm:grid-cols-3 gap-4">
           <div>
             <label class="block text-sm font-medium mb-1">Pilihan Program *</label>
             <select id="program" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
@@ -307,12 +307,17 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Rencana Skema Pembayaran *</label>
+            <label class="block text-sm font-medium mb-1">Skema Pembayaran *</label>
             <select id="skemaPembayaran" required onchange="syncSkemaToCalculator(this.value)" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
-              <option value="Standard">Pembayaran Reguler</option>
+              <option value="Standard">Reguler</option>
               <option value="DP_2.5M">DP ≥ Rp 2.500.000 (Gratis Pendaftaran)</option>
               <option value="Lunas">Bayar Lunas (Cashback Rp 300.000)</option>
             </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Jumlah Bayar Awal (Rp) *</label>
+            <input type="number" id="nominalBayarAwal" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none font-semibold text-brand-700 dark:text-brand-400" placeholder="2500000">
+            <span id="hint-bayar-awal" class="text-[11px] text-slate-500 mt-1 block">Rekomendasi min: Rp 250.000</span>
           </div>
         </div>
 
@@ -332,6 +337,7 @@
   <!-- JAVASCRIPT SYSTEM LOGIC -->
   <script>
     let globalConfig = {};
+    let calculatedTotalAkhir = 0;
 
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
@@ -394,24 +400,30 @@
         document.getElementById('label-headwear').innerText = "5. Kerudung (Akhwat)";
       }
 
-      // Hitung Diskon & Potongan
       let diskon = 0;
       const rowDiskon = document.getElementById('row-diskon');
       const labelDiskon = document.getElementById('label-diskon');
       const costDiskon = document.getElementById('cost-diskon');
+      const inputBayarAwal = document.getElementById('nominalBayarAwal');
+      const hintBayarAwal = document.getElementById('hint-bayar-awal');
 
       if (selectedSkema === 'DP_2.5M') {
-        diskon = pendaftaran; // Gratis Pendaftaran
+        diskon = pendaftaran;
         rowDiskon.classList.remove('hidden');
         labelDiskon.innerText = "Diskon DP ≥ Rp 2,5 Juta (Gratis Pendaftaran)";
         costDiskon.innerText = "- " + formatRupiah(diskon);
+        inputBayarAwal.value = 2500000;
+        hintBayarAwal.innerText = "Syarat diskon: Minimal bayar DP Rp 2.500.000";
       } else if (selectedSkema === 'Lunas') {
-        diskon = parseInt(cfg.cashback_lunas || 300000); // Cashback Lunas
+        diskon = parseInt(cfg.cashback_lunas || 300000);
         rowDiskon.classList.remove('hidden');
         labelDiskon.innerText = "Cashback Pembayaran Lunas";
         costDiskon.innerText = "- " + formatRupiah(diskon);
+        hintBayarAwal.innerText = "Skema Pelunasan Langsung";
       } else {
         rowDiskon.classList.add('hidden');
+        inputBayarAwal.value = pendaftaran;
+        hintBayarAwal.innerText = "Minimal bayar pendaftaran: " + formatRupiah(pendaftaran);
       }
 
       document.getElementById('cost-pendaftaran').innerText = formatRupiah(pendaftaran);
@@ -425,9 +437,13 @@
       document.getElementById('cost-spp').innerText = formatRupiah(spp);
 
       const totalAwal = pendaftaran + infaq + buku + seragam + headwearCost + mutu + atribut + rapor + spp;
-      const totalAkhir = totalAwal - diskon;
+      calculatedTotalAkhir = totalAwal - diskon;
 
-      document.getElementById('cost-total').innerText = formatRupiah(totalAkhir);
+      document.getElementById('cost-total').innerText = formatRupiah(calculatedTotalAkhir);
+
+      if (selectedSkema === 'Lunas') {
+        inputBayarAwal.value = calculatedTotalAkhir;
+      }
     }
 
     async function initData() {
@@ -503,6 +519,8 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Memproses Pendaftaran...`;
 
+      const nominalAwal = document.getElementById('nominalBayarAwal').value;
+
       const payload = {
         namaSiswa: document.getElementById('namaSiswa').value,
         nik: document.getElementById('nik').value,
@@ -513,7 +531,8 @@
         noWa: document.getElementById('noWa').value,
         program: document.getElementById('program').value,
         skemaPembayaran: document.getElementById('skemaPembayaran').value,
-        totalBayar: document.getElementById('cost-total').innerText
+        totalBayar: document.getElementById('cost-total').innerText,
+        nominalBayarAwal: formatRupiah(nominalAwal)
       };
 
       try {
@@ -527,10 +546,11 @@
           Swal.fire({
             icon: 'success',
             title: 'Pendaftaran Berhasil!',
-            text: `Nomor Registrasi: ${result.noReg}. Notifikasi otomatis telah dikirim ke Admin WhatsApp. Mohon untuk mencatat Nomor Registrasi!`,
+            text: `Nomor Registrasi: ${result.noReg}. Notifikasi otomatis telah dikirim ke Admin WhatsApp.`,
             confirmButtonColor: '#16a34a'
           });
           document.getElementById('form-spmb').reset();
+          updateBiayaDisplay();
         } else {
           throw new Error(result.message);
         }
